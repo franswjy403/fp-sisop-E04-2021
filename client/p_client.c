@@ -68,7 +68,7 @@ int main(int argc, char const *argv[]){
 
     char temp[1000], server_rep[1000];
     temp={0};
-    sprintf(temp, "%s\t%s", username, password);
+    sprintf(temp, "%s-%s", username, password);
 
     //ssize_t send(int socket, const void *buffer, size_t length, int flags);
     //socket
