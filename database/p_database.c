@@ -13,14 +13,16 @@
 #include <stdio.h>
 #include <stdbool.h> 
 
+int accountC = 0, fileC=0;
+char accountPool[100][1000];
 typedef struct sockaddr_in sin;
 
 int main(int argc, char const *argv[]){
-    int sockfd;
+    int sockfd, flag, sockfd2;
+    accountPool={0};
+    sin server, client;
 
-    sin server;
-
-    char msg[1000], username[1000], password[1000], server_rep[1000], temp[1000];
+    char msg[1000], username[1000], password[1000], server_rep[1000], temp[1000], char acc[1000];
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0))< 0){
         printf("Socket Failed!\n");
@@ -29,45 +31,43 @@ int main(int argc, char const *argv[]){
 
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
-    int flag = inet_pton(AF_INET, "127.0.0.1", &server.sin_addr);
+    server.sin_addr.s_addr = INADDR_ANY;
 
-    if (flag<=0){
-        printf("Error: Adress not found\n");
+    if (bind(sockfd, (sin*)&server, sizeof(server), 0)<0){
+        printf("Error: bind failed");
         return 0;
     }
 
-    flag = connect(sockfd, (struct sockaddr *)&server, sizeof(server));
-    if (flag<0){
-        printf("Error: Connection failed\n");
+    listen(sockfd, 10)
+
+    FILE* file;
+    file=fopen("accounts.txt", "a+");
+
+    while (fscanf(file, "%s\n", acc)!=EOF){
+        strcpy(accountPool[accountC++], acc);
+    }
+    fclose(file);
+
+    int res = mkdir("/home/frans0416/Documents/sisopE/FP/server/database", 0777);
+    printf("Please wait\n");
+    int temp = sizeof(sin);
+
+    while (flag=accept(sockfd, (sin*)&client, (socklen_t*)&temp)){
+        printf("Connection accepted\n");
+        pthread_t p1;
+
+        sockfd2 = malloc(1);
+        *sockfd = client;
+
+        if (pthread_create(&p1, NULL, connection_handler, (void*)sockfd2)<0){
+            printf("Error: thread not created");
+            return 0;
+        }
+    }
+
+    if (client<0){
+        printf("Acception failed");
         return 0;
     }
-
-    printf("Please wait...");
-
-    recv(sockfd, server_reply, strlen(server_reply), 0);
-
-    if (getuid!=0){
-        strcpy(username, argv[2]);
-        strcpy(password, argv[4]);
-        sprintf(temp, "%s-%s", username, password)
-        send(sockfd, temp, strlen(temp), 0);
-        flag = recv(sockfd, server_rep, strlen(server_rep), 0);
-        if (flag<0){
-            printf("Error: failed recv\n");
-        }
-        if(strcmp(server_rep, "success")==0){
-            printf("Login succesfull\n");
-            send(sockfd, "s", 1, 0);
-        }
-        else{
-            printf("Login failed\n");
-        }
-    }
-    else{
-        printf("No login\n");
-    }
-    
-    printf("Hai");
-    close(sockfd);
     return 0;
 }

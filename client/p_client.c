@@ -60,7 +60,7 @@ int main(int argc, char const *argv[]){
         return 0;
     }
 
-    flag = connect(sockfd, (struct sockaddr *)&s_address, sizeof(s_address));
+    flag = connect(sockfd, (sin*)&s_address, sizeof(s_address));
     if (flag<0){
         printf("Error: Connection failed\n");
         return 0;
