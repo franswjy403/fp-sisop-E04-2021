@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdbool.h> 
 
 typedef struct sockaddr_in sin;
 
@@ -19,16 +21,16 @@ int main(int argc, char const *argv[]){
     char username[1000], password[1000];
 
     if (uid==0) {
-        printf("Welcome Master!");
+        printf("Welcome Master!\n");
         strcpy(username, "admin");
         strcpy(password, "admin");
 
     } else if(argc!=5 || strcmp(argv[1], "-u")!=0 || strcmp(argv[1], "-p")!=0) {
-        printf("Syntax Error!");
+        printf("Syntax Error!\n");
         return 0;
     }
     else{
-        printf("Welcome!");
+        printf("Welcome!\n");
         trcpy(username, argv[2]);
         strcpy(password, argv[4]);
     }
@@ -45,7 +47,7 @@ int main(int argc, char const *argv[]){
     int sockfd;
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0))< 0){
-        printf("Socket Failed!");
+        printf("Socket Failed!\n");
         return 0;
     }
 
@@ -54,17 +56,17 @@ int main(int argc, char const *argv[]){
 
     int flag = inet_pton(AF_INET, "127.0.0.1", &s_address.sin_addr);
     if (flag<=0){
-        printf("Error: Adress not found");
+        printf("Error: Adress not found\n");
         return 0;
     }
 
     flag = connect(sockfd, (struct sockaddr *)&s_address, sizeof(s_address));
     if (flag<0){
-        printf("Error: Connection failed");
+        printf("Error: Connection failed\n");
         return 0;
     }
 
-    char temp[1000];
+    char temp[1000], server_rep[1000];
     temp={0};
     sprintf(temp, "%s\t%s", username, password);
 
@@ -76,4 +78,19 @@ int main(int argc, char const *argv[]){
     //length
     //Specifies the length of the message in bytes.
     send(sockfd, temp, strlen(temp), 0);
+
+    flag = recv(sockfd, server_rep, strlen(server_rep), 0);
+    if (flag<0){
+        printf("Error: failed recv\n");
+    }
+    if(strcmp(server_rep, "success")==0){
+        printf("Login succesfull\n");
+        send(sockfd, "s", 1, 0);
+    }
+    else{
+        printf("Login failed\n");
+    }
+    printf("Hai");
+    close(sockfd);
+    return 0;
 }
