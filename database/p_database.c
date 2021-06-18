@@ -51,6 +51,23 @@ int main(int argc, char const *argv[]){
         strcpy(password, argv[4]);
         sprintf(temp, "%s-%s", username, password)
         send(sockfd, temp, strlen(temp), 0);
-        flag = recv(sockfd, server_rep, strlen(server_reply), 0);
+        flag = recv(sockfd, server_rep, strlen(server_rep), 0);
+        if (flag<0){
+            printf("Error: failed recv\n");
+        }
+        if(strcmp(server_rep, "success")==0){
+            printf("Login succesfull\n");
+            send(sockfd, "s", 1, 0);
+        }
+        else{
+            printf("Login failed\n");
+        }
     }
+    else{
+        printf("No login\n");
+    }
+    
+    printf("Hai");
+    close(sockfd);
+    return 0;
 }
